@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "event hub for an organization",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon ../server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aayush-bp/Event_hub_Makeathon_20.git"
+  },
+  "author": "AIGINEERS",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aayush-bp/Event_hub_Makeathon_20/issues"
+  },
+  "homepage": "https://github.com/aayush-bp/Event_hub_Makeathon_20#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
