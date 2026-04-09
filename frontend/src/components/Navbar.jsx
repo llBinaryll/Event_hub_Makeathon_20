@@ -29,7 +29,8 @@ export const Navbar = () => {
     navigate('/login');
   };
 
-  console.log("USER IN NAVBAR:", user.user.name);
+  const userData = user?.user || user;
+  const userRole = userData?.role;
 
   return (
     <nav className="bg-gradient-to-r from-primary via-blue-600 to-blue-700 text-white shadow-2xl">
@@ -57,6 +58,14 @@ export const Navbar = () => {
             >
               Create Event
             </button>
+            {(userRole === 'ADMIN' || userRole === 'ORGANIZER') && (
+              <button
+                onClick={() => navigate('/admin')}
+                className="hover:text-blue-100 transition-colors duration-300 font-medium px-3 py-1 bg-blue-600 rounded-lg hover:bg-blue-800"
+              >
+                Approve Events
+              </button>
+            )}
             <div className="relative">
               <button
                 onClick={() => navigate('/notifications')}
@@ -76,7 +85,7 @@ export const Navbar = () => {
                 className="flex items-center gap-2 hover:text-blue-100 transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-blue-600 font-medium"
               >
                 <User className="w-5 h-5" />
-                {user?.name}
+                {userData?.name}
               </button>
               <div 
                 ref={profileMenuRef}
@@ -131,6 +140,17 @@ export const Navbar = () => {
             >
               Create Event
             </button>
+            {(userRole === 'ADMIN' || userRole === 'ORGANIZER') && (
+              <button
+                onClick={() => {
+                  navigate('/admin');
+                  setIsMenuOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-blue-800 bg-blue-700 font-medium"
+              >
+                Approve Events
+              </button>
+            )}
             <button
               onClick={() => {
                 navigate('/notifications');

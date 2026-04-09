@@ -12,6 +12,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { CreateEventPage } from './pages/CreateEventPage';
 import { EventDetailPage } from './pages/EventDetailPage';
 import { NotificationsPage } from './pages/NotificationsPage';
+import { AdminPage } from './pages/AdminPage';
 
 // Main App Router
 const AppRouter = () => {
@@ -66,6 +67,14 @@ const AppRouter = () => {
         element={
           <ProtectedRoute>
             <NotificationsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminPage />
           </ProtectedRoute>
         }
       />
