@@ -1,0 +1,92 @@
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { NotificationProvider, useNotifications } from './context/NotificationContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { useInterval } from './hooks/useInterval';
+
+// Pages
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { CreateEventPage } from './pages/CreateEventPage';
+import { EventDetailPage } from './pages/EventDetailPage';
+import { NotificationsPage } from './pages/NotificationsPage';
+
+// Main App Router
+const AppRouter = () => {
+  const { isAuthenticated } = useAuth();
+  const { fetchNotifications } = useNotifications();
+
+  // Poll for notifications every 30 seconds
+  useInterval(() => {
+    if (isAuthenticated) {
+      fetchNotifications();
+    }
+  }, 30000);
+
+  return (
+    <Routes>
+      <Route
+        path="/login"
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />}
+      />
+      <Route
+        path="/register"
+        element={
+          isAuthenticated ? <Navigate to="/dashboard" /> : <RegisterPage />
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/create-event"
+        element={
+          <ProtectedRoute>
+            <CreateEventPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/events/:eventId"
+        element={
+          <ProtectedRoute>
+            <EventDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <NotificationsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/"
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />}
+      />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
+};
+
+// Main App Component
+export const App = () => {
+  return (
+    <AuthProvider>
+      <NotificationProvider>
+        <Router>
+          <AppRouter />
+        </Router>
+      </NotificationProvider>
+    </AuthProvider>
+  );
+};
