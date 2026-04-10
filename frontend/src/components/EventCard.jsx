@@ -24,10 +24,10 @@ export const EventCard = ({ event, isRegistered, onRegister, onUnregister }) => 
           <Calendar className="w-4 h-4 text-primary" />
           <span>{formatDate(event.dateTime)}</span>
         </div>
-        {event.location && (
+        {event.locations && event.locations.length > 0 && (
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-primary" />
-            <span>{event.location}</span>
+            <span>{event.locations[0]}</span>
           </div>
         )}
         <div className="flex items-center gap-2">

@@ -14,6 +14,7 @@ import { EventDetailPage } from './pages/EventDetailPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AdminPage } from './pages/AdminPage';
 import { UserManagementPage } from './pages/UserManagementPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 // Main App Router
 const AppRouter = () => {
@@ -84,6 +85,14 @@ const AppRouter = () => {
         element={
           <ProtectedRoute>
             <UserManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
           </ProtectedRoute>
         }
       />

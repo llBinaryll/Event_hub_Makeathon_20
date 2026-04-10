@@ -25,14 +25,16 @@ export const EventDetailPage = () => {
   const fetchEventDetails = async () => {
     try {
       setLoading(true);
-      const response = await eventService.getEventById(eventId);
-      setEvent(response.data);
+      // Get event details
+      const eventData = await eventService.getEventById(eventId);
+      setEvent(eventData);
       
-      // Check if user is registered
-      const userRegisteredEvents = await eventService.getUserRegisteredEvents();
-      setIsRegistered(
-        userRegisteredEvents.data.some((e) => e._id === eventId)
-      );
+      // Check if current user is in participants array
+      if (user && eventData.participants) {
+        setIsRegistered(
+          eventData.participants.some((p) => p._id === user.user._id || p === user.user._id)
+        );
+      }
     } catch (err) {
       setError('Failed to load event details');
       console.error(err);
@@ -139,9 +141,13 @@ export const EventDetailPage = () => {
                     <MapPin className="w-6 h-6 text-primary flex-shrink-0" />
                     <div>
                       <p className="text-sm text-gray-600">Location</p>
-                      <p className="text-lg font-semibold text-gray-900">
-                        {event.location}
-                      </p>
+                      <div className="text-lg font-semibold text-gray-900">
+                        {event.locations && event.locations.length > 0
+                          ? event.locations.map((loc, idx) => (
+                              <p key={idx}>{loc}</p>
+                            ))
+                          : 'No location specified'}
+                      </div>
                     </div>
                   </div>
 
@@ -164,6 +170,22 @@ export const EventDetailPage = () => {
                       </p>
                     </div>
                   </div>
+
+                  {event.speakerIds && event.speakerIds.length > 0 && (
+                    <div className="flex items-start gap-4">
+                      <Users className="w-6 h-6 text-primary flex-shrink-0" />
+                      <div>
+                        <p className="text-sm text-gray-600">Speakers</p>
+                        <div className="text-lg font-semibold text-gray-900">
+                          {event.speakerIds.map((speaker, idx) => (
+                            <p key={idx}>
+                              {speaker.name} ({speaker.email})
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
