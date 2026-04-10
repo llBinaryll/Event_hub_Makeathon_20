@@ -4,11 +4,11 @@ const { sendSuccess, sendError } = require('../utils/response');
 /**
  * @route   POST /api/events
  * @desc    Create a new event
- * @access  Private (SPEAKER)
+ * @access  Private (ADMIN/ORGANIZER)
  */
 exports.createEvent = async (req, res, next) => {
   try {
-    const { title, description, type, dateTime, duration, location, maxParticipants, imageUrl } = req.body;
+    const { title, description, type, dateTime, duration, locations, speakerIds, maxParticipants, imageUrl } = req.body;
 
     // Validation
     if (!title || !description || !type || !dateTime || !duration) {
@@ -21,14 +21,15 @@ exports.createEvent = async (req, res, next) => {
       type,
       dateTime,
       duration,
-      location,
+      locations: locations || [],
       maxParticipants,
       imageUrl,
     };
 
-    // Speaker creates event, organizer needs to approve it
-    // For now, using speaker as both
-    const event = await eventService.createEvent(eventData, req.user._id, req.user._id);
+    // Event creator (admin/organizer) is the organizer
+    // speakerIds are provided in the request
+    const speakers = speakerIds && speakerIds.length > 0 ? speakerIds : [req.user._id];
+    const event = await eventService.createEvent(eventData, speakers, req.user._id);
 
     sendSuccess(res, 201, 'Event created successfully', event);
   } catch (err) {
@@ -196,6 +197,20 @@ exports.getEventsBySpeaker = async (req, res, next) => {
   try {
     const events = await eventService.getEventsBySpeaker(req.params.speakerId);
     sendSuccess(res, 200, 'Speaker events retrieved', events);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * @route   GET /api/events/speaker/pending/assignments
+ * @desc    Get pending events assigned to current speaker for approval
+ * @access  Private (SPEAKER)
+ */
+exports.getSpeakerPendingEvents = async (req, res, next) => {
+  try {
+    const events = await eventService.getSpeakerPendingEvents(req.user._id);
+    sendSuccess(res, 200, 'Pending events retrieved', events);
   } catch (err) {
     next(err);
   }

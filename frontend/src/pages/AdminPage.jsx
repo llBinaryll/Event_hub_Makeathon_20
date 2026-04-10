@@ -25,8 +25,16 @@ export const AdminPage = () => {
     try {
       setLoading(true);
       setError('');
-      const response = await eventService.getAllEvents({ status: 'PENDING' });
-      setEvents(response.data || []);
+      
+      // If user is a speaker, get only events assigned to them
+      if (userData?.role === 'SPEAKER') {
+        const events = await eventService.getSpeakerPendingEvents();
+        setEvents(Array.isArray(events) ? events : []);
+      } else {
+        // Admins and organizers see all pending events
+        const events = await eventService.getAllEvents({ status: 'PENDING' });
+        setEvents(Array.isArray(events) ? events : []);
+      }
     } catch (err) {
       setError('Failed to load pending events');
       console.error(err);
@@ -74,7 +82,7 @@ export const AdminPage = () => {
     }
   };
 
-  if (!userData || (userData.role !== 'ADMIN' && userData.role !== 'ORGANIZER')) {
+  if (!userData || (userData.role !== 'ADMIN' && userData.role !== 'ORGANIZER' && userData.role !== 'SPEAKER')) {
     return (
       <>
         <Navbar />
@@ -82,7 +90,7 @@ export const AdminPage = () => {
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Access Denied</h1>
             <p className="text-gray-600">
-              Only admins and organizers can access this page.
+              Only admins, organizers, and speakers can access this page.
             </p>
           </div>
         </div>
@@ -110,10 +118,10 @@ export const AdminPage = () => {
         <div className="max-w-6xl mx-auto px-4 py-8 relative z-10">
           <div className="mb-8">
             <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Event Approvals
+              {userData?.role === 'SPEAKER' ? 'Pending Events to Review' : 'Event Approvals'}
             </h1>
             <p className="text-gray-600 mt-2 text-lg font-medium">
-              Review and approve pending events
+              {userData?.role === 'SPEAKER' ? 'Events assigned to you' : 'Review and approve pending events'}
             </p>
           </div>
 

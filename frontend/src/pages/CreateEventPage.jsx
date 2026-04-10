@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, DollarSign } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { ErrorAlert, SuccessAlert } from '../components/AlertComponents';
 import { eventService } from '../services/eventService';
+import { authService } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 
 export const CreateEventPage = () => {
@@ -12,21 +13,74 @@ export const CreateEventPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [allUsers, setAllUsers] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     type: 'Tech',
     dateTime: '',
     duration: 120,
-    location: '',
+    locations: [],
+    speakerIds: [],
     maxParticipants: 50,
   });
+  const [locationInput, setLocationInput] = useState('');
+
+  useEffect(() => {
+    if (user?.user?.role === 'ADMIN' || user?.role === 'ADMIN') {
+      fetchUsers();
+    }
+  }, [user]);
+
+  const fetchUsers = async () => {
+    try {
+      const users = await authService.getAllUsers();
+      setAllUsers(Array.isArray(users) ? users : []);
+    } catch (err) {
+      console.error('Failed to fetch users', err);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: name === 'duration' || name === 'maxParticipants' ? parseInt(value) : value,
+    }));
+  };
+
+  const addLocation = () => {
+    if (locationInput.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        locations: [...prev.locations, locationInput.trim()],
+      }));
+      setLocationInput('');
+    }
+  };
+
+  const removeLocation = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      locations: prev.locations.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleSpeakerSelect = (e) => {
+    const selectedId = e.target.value;
+    if (selectedId && !formData.speakerIds.includes(selectedId)) {
+      setFormData((prev) => ({
+        ...prev,
+        speakerIds: [...prev.speakerIds, selectedId],
+      }));
+    }
+    e.target.value = '';
+  };
+
+  const removeSpeaker = (speakerId) => {
+    setFormData((prev) => ({
+      ...prev,
+      speakerIds: prev.speakerIds.filter((id) => id !== speakerId),
     }));
   };
 
@@ -50,26 +104,42 @@ export const CreateEventPage = () => {
       return;
     }
 
-    if (!formData.location.trim()) {
-      setError('Event location is required');
+    if (formData.locations.length === 0) {
+      setError('At least one location is required');
+      return;
+    }
+
+    if (formData.speakerIds.length === 0) {
+      setError('At least one speaker is required');
       return;
     }
 
     try {
       setLoading(true);
-      await eventService.createEvent(formData);
+      const eventPayload = {
+        title: formData.title,
+        description: formData.description,
+        type: formData.type,
+        dateTime: formData.dateTime,
+        duration: formData.duration,
+        locations: formData.locations,
+        speakerIds: formData.speakerIds,
+        maxParticipants: formData.maxParticipants,
+      };
+      await eventService.createEvent(eventPayload);
       setSuccess('Event created successfully!');
       setTimeout(() => {
         navigate('/dashboard');
       }, 2000);
     } catch (err) {
-      setError(
-        err.response?.data?.message || 'Failed to create event'
-      );
+      setError(err.response?.data?.message || 'Failed to create event');
     } finally {
       setLoading(false);
     }
   };
+
+  const userData = user?.user || user;
+  const isAdmin = userData?.role === 'ADMIN';
 
   return (
     <>
@@ -130,11 +200,12 @@ export const CreateEventPage = () => {
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                   >
-                    <option>Tech</option>
-                    <option>Business</option>
-                    <option>Social</option>
-                    <option>Sports</option>
-                    <option>Other</option>
+                    <option value="Tech">Tech</option>
+                    <option value="Business">Business</option>
+                    <option value="Fun">Fun</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Educational">Educational</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
 
@@ -166,19 +237,91 @@ export const CreateEventPage = () => {
                 />
               </div>
 
+              {/* Locations */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Location
+                  Locations
                 </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-                  placeholder="Enter event location"
-                />
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={locationInput}
+                    onChange={(e) => setLocationInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addLocation())}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                    placeholder="Enter location and press Enter or click Add"
+                  />
+                  <button
+                    type="button"
+                    onClick={addLocation}
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600"
+                  >
+                    Add
+                  </button>
+                </div>
+                {formData.locations.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {formData.locations.map((location, index) => (
+                      <div
+                        key={index}
+                        className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center gap-2"
+                      >
+                        {location}
+                        <button
+                          type="button"
+                          onClick={() => removeLocation(index)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
+
+              {/* Speakers (only for admin) */}
+              {isAdmin && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Assign Speakers
+                  </label>
+                  <select
+                    onChange={handleSpeakerSelect}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                    defaultValue=""
+                  >
+                    <option value="">Select a speaker to add</option>
+                    {allUsers.map((u) => (
+                      <option key={u._id} value={u._id}>
+                        {u.name} ({u.email}) - {u.dcLocation}
+                      </option>
+                    ))}
+                  </select>
+                  {formData.speakerIds.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {formData.speakerIds.map((speakerId) => {
+                        const speaker = allUsers.find((u) => u._id === speakerId);
+                        return (
+                          <div
+                            key={speakerId}
+                            className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full flex items-center gap-2"
+                          >
+                            {speaker?.name}
+                            <button
+                              type="button"
+                              onClick={() => removeSpeaker(speakerId)}
+                              className="text-purple-600 hover:text-purple-800"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

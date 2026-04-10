@@ -8,7 +8,7 @@ class EventService {
   /**
    * Create a new event
    * @param {object} eventData - Event data
-   * @param {string} speakerId - Speaker ID
+   * @param {string|array} speakerId - Speaker ID(s)
    * @param {string} organizerId - Organizer ID
    * @returns {object} Created event
    */
@@ -16,12 +16,14 @@ class EventService {
     try {
       const event = await Event.create({
         ...eventData,
-        speakerId,
+        speakerId: Array.isArray(speakerId) ? speakerId[0] : speakerId,
+        speakerIds: Array.isArray(speakerId) ? speakerId : [speakerId],
         organizerId,
       });
 
-      await event.populate('speakerId', 'name email');
-      await event.populate('organizerId', 'name email');
+      await event.populate('speakerId', 'name email dcLocation');
+      await event.populate('speakerIds', 'name email dcLocation');
+      await event.populate('organizerId', 'name email dcLocation');
 
       return event;
     } catch (err) {
@@ -264,6 +266,23 @@ class EventService {
       const events = await Event.find({
         participants: userId,
         status: 'APPROVED',
+      }).sort({ dateTime: 1 });
+      return events;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  /**
+   * Get pending events assigned to speaker for approval
+   * @param {string} speakerId - Speaker ID
+   * @returns {array} Events
+   */
+  async getSpeakerPendingEvents(speakerId) {
+    try {
+      const events = await Event.find({
+        speakerIds: speakerId,
+        status: 'PENDING',
       }).sort({ dateTime: 1 });
       return events;
     } catch (err) {

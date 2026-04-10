@@ -10,6 +10,7 @@ const router = express.Router();
 router.get('/', eventController.getAllEvents);
 router.get('/trending/popular', eventController.getAllEvents); // Redirect to trending
 router.get('/user/registered', protect, eventController.getUserRegisteredEvents);
+router.get('/speaker/pending/assignments', protect, eventController.getSpeakerPendingEvents);
 router.get('/speaker/:speakerId', eventController.getEventsBySpeaker);
 router.get('/:id', eventController.getEventById);
 

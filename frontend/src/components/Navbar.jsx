@@ -47,23 +47,23 @@ export const Navbar = () => {
 
           <div className="hidden lg:flex items-center gap-6">
             <button
-              onClick={() => navigate('/events')}
-              className="hover:text-blue-100 transition-colors duration-300 font-medium"
+              onClick={() => navigate('/dashboard')}
+              className="hover:text-blue-100 transition-colors duration-300 font-medium px-3 py-1 bg-blue-500 rounded-lg hover:bg-blue-700"
             >
               Events
             </button>
             <button
               onClick={() => navigate('/create-event')}
-              className="hover:text-blue-100 transition-colors duration-300 font-medium"
+              className="hover:text-blue-100 transition-colors duration-300 font-medium px-3 py-1 bg-green-600 rounded-lg hover:bg-green-800"
             >
               Create Event
             </button>
-            {(userRole === 'ADMIN' || userRole === 'ORGANIZER') && (
+            {(userRole === 'ADMIN' || userRole === 'ORGANIZER' || userRole === 'SPEAKER') && (
               <button
                 onClick={() => navigate('/admin')}
                 className="hover:text-blue-100 transition-colors duration-300 font-medium px-3 py-1 bg-blue-600 rounded-lg hover:bg-blue-800"
               >
-                Approve Events
+                {userRole === 'SPEAKER' ? 'My Pending Events' : 'Approve Events'}
               </button>
             )}
             {userRole === 'ADMIN' && (
@@ -132,10 +132,10 @@ export const Navbar = () => {
           <div className="md:hidden pb-4">
             <button
               onClick={() => {
-                navigate('/events');
+                navigate('/dashboard');
                 setIsMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 hover:bg-blue-600"
+              className="block w-full text-left px-4 py-2 hover:bg-blue-800 bg-blue-700 font-medium rounded mb-2"
             >
               Events
             </button>
@@ -144,11 +144,11 @@ export const Navbar = () => {
                 navigate('/create-event');
                 setIsMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 hover:bg-blue-600"
+              className="block w-full text-left px-4 py-2 hover:bg-green-800 bg-green-700 font-medium rounded mb-2"
             >
               Create Event
             </button>
-            {(userRole === 'ADMIN' || userRole === 'ORGANIZER') && (
+            {(userRole === 'ADMIN' || userRole === 'ORGANIZER' || userRole === 'SPEAKER') && (
               <button
                 onClick={() => {
                   navigate('/admin');
@@ -156,7 +156,7 @@ export const Navbar = () => {
                 }}
                 className="block w-full text-left px-4 py-2 hover:bg-blue-800 bg-blue-700 font-medium"
               >
-                Approve Events
+                {userRole === 'SPEAKER' ? 'My Pending Events' : 'Approve Events'}
               </button>
             )}
             {userRole === 'ADMIN' && (

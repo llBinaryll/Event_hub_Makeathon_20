@@ -24,15 +24,15 @@ export const DashboardPage = () => {
       setLoading(true);
       setError('');
 
-      const [eventsRes, registeredRes, recommendedRes] = await Promise.all([
+      const [eventsList, registeredList, recommendedList] = await Promise.all([
         eventService.getAllEvents({ status: 'APPROVED' }),
         eventService.getUserRegisteredEvents(),
         recommendationService.getPersonalizedRecommendations(),
       ]);
 
-      setEvents(eventsRes.data || []);
-      setRegisteredEvents(registeredRes.data || []);
-      setRecommendedEvents(recommendedRes.data || []);
+      setEvents(Array.isArray(eventsList) ? eventsList : []);
+      setRegisteredEvents(Array.isArray(registeredList) ? registeredList : []);
+      setRecommendedEvents(Array.isArray(recommendedList) ? recommendedList : []);
     } catch (err) {
       setError('Failed to load dashboard data');
       console.error(err);

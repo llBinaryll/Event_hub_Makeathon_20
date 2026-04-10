@@ -7,12 +7,12 @@ export const eventService = {
     if (filters.type) params.append('type', filters.type);
     
     const response = await api.get(`/events?${params.toString()}`);
-    return response.data;
+    return response.data.data || [];
   },
 
   getEventById: async (eventId) => {
     const response = await api.get(`/events/${eventId}`);
-    return response.data;
+    return response.data.data;
   },
 
   createEvent: async (eventData) => {
@@ -47,11 +47,16 @@ export const eventService = {
 
   getUserRegisteredEvents: async () => {
     const response = await api.get('/events/user/registered');
-    return response.data;
+    return response.data.data || [];
   },
 
   getEventsBySpeaker: async (speakerId) => {
     const response = await api.get(`/events/speaker/${speakerId}`);
-    return response.data;
+    return response.data.data || [];
+  },
+
+  getSpeakerPendingEvents: async () => {
+    const response = await api.get('/events/speaker/pending/assignments');
+    return response.data.data || [];
   },
 };

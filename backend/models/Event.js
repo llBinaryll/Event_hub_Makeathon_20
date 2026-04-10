@@ -24,14 +24,22 @@ const eventSchema = new mongoose.Schema(
       type: Number, // in minutes
       required: [true, 'Please provide event duration'],
     },
-    location: {
-      type: String,
-      required: false,
-    },
+    locations: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    speakerIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    // Keep speakerId for backward compatibility
     speakerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'Please provide speaker ID'],
     },
     organizerId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -65,8 +73,9 @@ const eventSchema = new mongoose.Schema(
 
 // Populate speaker and organizer details
 eventSchema.pre(/^find/, function () {
-  this.populate('speakerId', 'name email');
-  this.populate('organizerId', 'name email');
+  this.populate('speakerId', 'name email dcLocation');
+  this.populate('speakerIds', 'name email dcLocation');
+  this.populate('organizerId', 'name email dcLocation');
 });
 
 module.exports = mongoose.model('Event', eventSchema);
