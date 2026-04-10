@@ -14,6 +14,7 @@ export const RegisterPage = () => {
     password: '',
     confirmPassword: '',
     role: 'USER',
+    dcLocation: '',
   });
   const [error, setError] = useState('');
 
@@ -47,12 +48,18 @@ export const RegisterPage = () => {
       return;
     }
 
+    if (!formData.dcLocation) {
+      setError('Please select a DC location');
+      return;
+    }
+
     try {
       await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         role: formData.role,
+        dcLocation: formData.dcLocation,
       });
       navigate('/login');
     } catch (err) {
@@ -135,6 +142,28 @@ export const RegisterPage = () => {
                 placeholder="Confirm your password"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              DC Location
+            </label>
+            <select
+              name="dcLocation"
+              value={formData.dcLocation}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+            >
+              <option value="">Select a location</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Pune">Pune</option>
+              <option value="Noida">Noida</option>
+              <option value="Kolkata">Kolkata</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Hyderabad">Hyderabad</option>
+              <option value="Chennai">Chennai</option>
+            </select>
           </div>
 
           <button

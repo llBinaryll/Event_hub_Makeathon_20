@@ -8,14 +8,14 @@ const { sendSuccess, sendError } = require('../utils/response');
  */
 exports.register = async (req, res, next) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, dcLocation } = req.body;
 
     // Validation
-    if (!name || !email || !password) {
-      return sendError(res, 400, 'Please provide name, email, and password');
+    if (!name || !email || !password || !dcLocation) {
+      return sendError(res, 400, 'Please provide name, email, password, and DC location');
     }
 
-    const result = await authService.register({ name, email, password, role });
+    const result = await authService.register({ name, email, password, role, dcLocation });
 
     sendSuccess(res, 201, 'User registered successfully', {
       user: result.user,
@@ -89,6 +89,46 @@ exports.updatePreferences = async (req, res, next) => {
   } catch (err) {
     if (err.message.includes('User not found')) {
       return sendError(res, 404, err.message);
+    }
+    next(err);
+  }
+};
+
+/**
+ * @route   GET /api/auth/users
+ * @desc    Get all users (admin only)
+ * @access  Private/Admin
+ */
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const users = await authService.getAllUsers();
+    sendSuccess(res, 200, 'Users retrieved successfully', users);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * @route   PUT /api/auth/users/:userId/role
+ * @desc    Update user role (admin only)
+ * @access  Private/Admin
+ */
+exports.updateUserRole = async (req, res, next) => {
+  try {
+    const { role } = req.body;
+
+    if (!role) {
+      return sendError(res, 400, 'Please provide a role');
+    }
+
+    const user = await authService.updateUserRole(req.params.userId, role);
+    sendSuccess(res, 200, 'User role updated successfully', user);
+  } catch (err) {
+    if (err.message.includes('User not found')) {
+      return sendError(res, 404, err.message);
+    }
+    if (err.message === 'Invalid role') {
+      return sendError(res, 400, err.message);
     }
     next(err);
   }

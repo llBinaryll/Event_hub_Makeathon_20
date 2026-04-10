@@ -24,6 +24,7 @@ class AuthService {
         email: userData.email,
         password: userData.password,
         role: userData.role || 'USER',
+        dcLocation: userData.dcLocation,
       });
 
       // Generate token
@@ -103,6 +104,47 @@ class AuthService {
       const user = await User.findByIdAndUpdate(
         userId,
         { preferences },
+        { new: true, runValidators: true }
+      );
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      return user;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  /**
+   * Get all users
+   * @returns {array} All users
+   */
+  async getAllUsers() {
+    try {
+      const users = await User.find().select('-password');
+      return users;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  /**
+   * Update user role
+   * @param {string} userId - User ID
+   * @param {string} role - New role
+   * @returns {object} Updated user
+   */
+  async updateUserRole(userId, role) {
+    try {
+      if (!['ADMIN', 'ORGANIZER', 'SPEAKER', 'USER'].includes(role)) {
+        throw new Error('Invalid role');
+      }
+
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { role },
         { new: true, runValidators: true }
       );
 

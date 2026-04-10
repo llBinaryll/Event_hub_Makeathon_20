@@ -22,6 +22,7 @@ const seedDatabase = async () => {
       email: 'admin@eventhub.com',
       password: 'password123',
       role: 'ADMIN',
+      dcLocation: 'Delhi',
       preferences: {
         eventTypes: ['Tech', 'Business'],
         notificationFrequency: 'DAILY',
@@ -34,6 +35,7 @@ const seedDatabase = async () => {
       email: 'alice@eventhub.com',
       password: 'password123',
       role: 'ORGANIZER',
+      dcLocation: 'Pune',
       preferences: {
         eventTypes: ['Tech', 'Educational'],
         notificationFrequency: 'DAILY',
@@ -45,6 +47,7 @@ const seedDatabase = async () => {
       email: 'bob@eventhub.com',
       password: 'password123',
       role: 'ORGANIZER',
+      dcLocation: 'Noida',
       preferences: {
         eventTypes: ['Fun', 'Sports'],
         notificationFrequency: 'WEEKLY',
@@ -57,6 +60,7 @@ const seedDatabase = async () => {
       email: 'john@eventhub.com',
       password: 'password123',
       role: 'SPEAKER',
+      dcLocation: 'Kolkata',
       preferences: {
         eventTypes: ['Tech'],
         notificationFrequency: 'DAILY',
@@ -68,6 +72,7 @@ const seedDatabase = async () => {
       email: 'jane@eventhub.com',
       password: 'password123',
       role: 'SPEAKER',
+      dcLocation: 'Mumbai',
       preferences: {
         eventTypes: ['Business', 'Educational'],
         notificationFrequency: 'DAILY',
@@ -80,6 +85,7 @@ const seedDatabase = async () => {
       email: 'alex@eventhub.com',
       password: 'password123',
       role: 'USER',
+      dcLocation: 'Bangalore',
       preferences: {
         eventTypes: ['Tech', 'Fun'],
         notificationFrequency: 'WEEKLY',
@@ -91,6 +97,7 @@ const seedDatabase = async () => {
       email: 'sara@eventhub.com',
       password: 'password123',
       role: 'USER',
+      dcLocation: 'Pune',
       preferences: {
         eventTypes: ['Educational', 'Business'],
         notificationFrequency: 'DAILY',
@@ -102,6 +109,7 @@ const seedDatabase = async () => {
       email: 'mike@eventhub.com',
       password: 'password123',
       role: 'USER',
+      dcLocation: 'Kolkata',
       preferences: {
         eventTypes: ['Sports', 'Fun'],
         notificationFrequency: 'NEVER',

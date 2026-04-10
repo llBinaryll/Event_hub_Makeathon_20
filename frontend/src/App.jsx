@@ -13,6 +13,7 @@ import { CreateEventPage } from './pages/CreateEventPage';
 import { EventDetailPage } from './pages/EventDetailPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AdminPage } from './pages/AdminPage';
+import { UserManagementPage } from './pages/UserManagementPage';
 
 // Main App Router
 const AppRouter = () => {
@@ -75,6 +76,14 @@ const AppRouter = () => {
         element={
           <ProtectedRoute>
             <AdminPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute>
+            <UserManagementPage />
           </ProtectedRoute>
         }
       />

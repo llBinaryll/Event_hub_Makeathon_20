@@ -66,6 +66,14 @@ export const Navbar = () => {
                 Approve Events
               </button>
             )}
+            {userRole === 'ADMIN' && (
+              <button
+                onClick={() => navigate('/admin/users')}
+                className="hover:text-blue-100 transition-colors duration-300 font-medium px-3 py-1 bg-purple-600 rounded-lg hover:bg-purple-800"
+              >
+                Manage Users
+              </button>
+            )}
             <div className="relative">
               <button
                 onClick={() => navigate('/notifications')}
@@ -149,6 +157,17 @@ export const Navbar = () => {
                 className="block w-full text-left px-4 py-2 hover:bg-blue-800 bg-blue-700 font-medium"
               >
                 Approve Events
+              </button>
+            )}
+            {userRole === 'ADMIN' && (
+              <button
+                onClick={() => {
+                  navigate('/admin/users');
+                  setIsMenuOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-purple-800 bg-purple-700 font-medium"
+              >
+                Manage Users
               </button>
             )}
             <button

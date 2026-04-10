@@ -29,6 +29,11 @@ const userSchema = new mongoose.Schema(
       enum: ['ADMIN', 'ORGANIZER', 'SPEAKER', 'USER'],
       default: 'USER',
     },
+    dcLocation: {
+      type: String,
+      required: [true, 'Please provide DC location'],
+      trim: true,
+    },
     preferences: {
       eventTypes: [String], // ["Tech", "Fun", etc]
       notificationFrequency: {

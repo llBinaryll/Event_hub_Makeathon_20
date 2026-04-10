@@ -25,6 +25,16 @@ export const authService = {
     return response.data;
   },
 
+  getAllUsers: async () => {
+    const response = await api.get('/auth/users');
+    return response.data.data;
+  },
+
+  updateUserRole: async (userId, role) => {
+    const response = await api.put(`/auth/users/${userId}/role`, { role });
+    return response.data.data;
+  },
+
   logout: () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
